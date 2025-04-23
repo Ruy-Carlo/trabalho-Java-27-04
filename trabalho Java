@@ -30,3 +30,43 @@ public class Main {
             System.out.println("Usando o Produto A");
         }
     }
+
+    static class ConcreteProductB implements Product {
+        public void use() {
+            System.out.println("Usando o Produto B");
+        }
+    }
+
+    static abstract class Creator {
+        public abstract Product factoryMethod();
+    }
+
+    static class ConcreteCreatorA extends Creator {
+        public Product factoryMethod() {
+            return new ConcreteProductA();
+        }
+    }
+
+    static class ConcreteCreatorB extends Creator {
+        public Product factoryMethod() {
+            return new ConcreteProductB();
+        }
+    }
+
+    // ----------- Main Program -----------
+    public static void main(String[] args) {
+        // Testando Singleton
+        Singleton s1 = Singleton.getInstance();
+        s1.showMessage();
+
+        // Testando Factory Method
+        Creator creatorA = new ConcreteCreatorA();
+        Product productA = creatorA.factoryMethod();
+        productA.use();
+
+        Creator creatorB = new ConcreteCreatorB();
+        Product productB = creatorB.factoryMethod();
+        productB.use();
+    }
+}
+
