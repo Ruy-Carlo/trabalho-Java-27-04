@@ -1,0 +1,128 @@
+import os
+
+ARQUIVO = "alunos.txt"
+
+def carregar_alunos():
+    alunos = []
+    if os.path.exists(ARQUIVO):
+        with open(ARQUIVO, "r") as f:
+            for linha in f:
+                partes = linha.strip().split(",", 3)
+                if len(partes) == 4:
+                    id_, matricula, nome, data_nascimento = partes
+                    alunos.append({
+                        "id": id_,
+                        "matricula": matricula,
+                        "nome": nome,
+                        "data_nascimento": data_nascimento
+                    })
+    return alunos
+
+def salvar_alunos(alunos):
+    with open(ARQUIVO, "w") as f:
+        for aluno in alunos:
+            f.write(f"{aluno['id']},{aluno['matricula']},{aluno['nome']},{aluno['data_nascimento']}\n")
+
+def inserir_aluno():
+    id_ = input("Digite o ID do aluno: ").strip()
+    matricula = input("Digite a matrícula do aluno: ").strip()
+    nome = input("Digite o nome do aluno: ").strip()
+    data_nascimento = input("Digite a data de nascimento (dd/mm/aaaa): ").strip()
+    alunos = carregar_alunos()
+    if any(aluno["matricula"] == matricula or aluno["id"] == id_ for aluno in alunos):
+        print("Aluno com essa matrícula ou ID já existe!")
+    else:
+        alunos.append({
+            "id": id_,
+            "matricula": matricula,
+            "nome": nome,
+            "data_nascimento": data_nascimento
+        })
+        salvar_alunos(alunos)
+        print("Aluno inserido com sucesso.")
+
+def excluir_aluno():
+    matricula = input("Digite a matrícula do aluno a ser excluído: ").strip()
+    alunos = carregar_alunos()
+    novos_alunos = [aluno for aluno in alunos if aluno["matricula"] != matricula]
+    if len(novos_alunos) != len(alunos):
+        salvar_alunos(novos_alunos)
+        print("Aluno excluído com sucesso.")
+    else:
+        print("Aluno não encontrado.")
+
+def editar_aluno():
+    matricula = input("Digite a matrícula do aluno a ser editado: ").strip()
+    alunos = carregar_alunos()
+    for aluno in alunos:
+        if aluno["matricula"] == matricula:
+            novo_nome = input(f"Digite o novo nome para {aluno['nome']}: ").strip()
+            nova_data = input(f"Digite a nova data de nascimento para {aluno['nome']} (atual: {aluno['data_nascimento']}): ").strip()
+            aluno["nome"] = novo_nome
+            aluno["data_nascimento"] = nova_data
+            salvar_alunos(alunos)
+            print("Aluno editado com sucesso.")
+            return
+    print("Aluno não encontrado.")
+
+def listar_alunos():
+    alunos = carregar_alunos()
+    if not alunos:
+        print("Nenhum aluno cadastrado.")
+    else:
+        print("\nLista de Alunos:")
+        for aluno in alunos:
+            print(f"ID: {aluno['id']} | Matrícula: {aluno['matricula']} | Nome: {aluno['nome']} | Data de Nascimento: {aluno['data_nascimento']}")
+        print()
+
+def buscar_por_matricula_ou_id():
+    print("\nBuscar por:")
+    print("1. Matrícula")
+    print("2. ID")
+    opcao = input("Escolha uma opção: ").strip()
+    alunos = carregar_alunos()
+    if opcao == "1":
+        matricula = input("Digite a matrícula: ").strip()
+        for aluno in alunos:
+            if aluno["matricula"] == matricula:
+                print(f"\nEncontrado: ID: {aluno['id']} | Nome: {aluno['nome']} | Data de Nascimento: {aluno['data_nascimento']}")
+                return
+        print("Aluno não encontrado.")
+    elif opcao == "2":
+        id_ = input("Digite o ID: ").strip()
+        for aluno in alunos:
+            if aluno["id"] == id_:
+                print(f"\nEncontrado: Matrícula: {aluno['matricula']} | Nome: {aluno['nome']} | Data de Nascimento: {aluno['data_nascimento']}")
+                return
+        print("Aluno não encontrado.")
+    else:
+        print("Opção inválida.")
+
+def menu():
+    while True:
+        print("\nMENU")
+        print("1. Inserir um Aluno")
+        print("2. Excluir um Aluno")
+        print("3. Editar um Aluno")
+        print("4. Listar todos os Alunos")
+        print("5. Buscar Aluno (por Matrícula ou ID)")
+        print("6. Sair")
+        opcao = input("Escolha uma opção: ").strip()
+        if opcao == "1":
+            inserir_aluno()
+        elif opcao == "2":
+            excluir_aluno()
+        elif opcao == "3":
+            editar_aluno()
+        elif opcao == "4":
+            listar_alunos()
+        elif opcao == "5":
+            buscar_por_matricula_ou_id()
+        elif opcao == "6":
+            print("Saindo do programa.")
+            break
+        else:
+            print("Opção inválida. Tente novamente.")
+
+# Iniciar o programa
+menu()
